@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Schedular Login{% endblock %}
+{% block content %} 
+  {{ super() }} 
+  <p>Please log in</p>
+  <form action="/auth" type="get">
+    <input type="text" name="userName" placeholder="User Name">
+    <label>User Name </label> 
+    <input type="password" name="userName" placeholder="Password">
+    <label>Password</label> 
+    <input type="submit" name="submit">
+  </form>
+{% endblock %}

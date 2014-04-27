@@ -1,0 +1,25 @@
+<!DOCKTYPE html>
+<html>
+<head>
+	{% block head %}
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+	<title>{% block title %} {% endblock %} - Room Schedular</title>
+	{% endblock %}
+</head>
+<body>
+	<header>
+		<h1>Room schedular for Luther College</h1>
+	</header>
+	<div id="content">
+		{% block content %} {% endblock %}
+	</div>
+	<div id="footer">
+		{% block footer %}
+		&copy; Copyright 2014 by <a href="http://lanejo01.github.io">Joe Lane</a><p>and</p><a href="http://daviis.github.io/">Isaac Davis</a>
+		{% endblock %}
+	</div>
+	<script src="https://code.jquery.com/jquery.js"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+</body>
+</html>

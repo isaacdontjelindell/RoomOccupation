@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}XKCD generator{% endblock %}
+{% block content %} 
+  {{ super() }} 
+  <div id="output">
+	<table class="table table-striped"> 
+	<tr>
+		<th>Word One</th>
+		<th>Word Two</th>
+		<th>Word Three</th>
+		<th>Word Four</th>
+		<th>Password</th>
+	</tr>
+	{% for wordGroup in passwords %}
+	<tr>
+		{% for word in wordGroup %}
+		<td> {{word}} </td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+	</table>
+  </div>
+{% endblock %}
