@@ -10,11 +10,9 @@ def index():
 def login():
 	error = None
 	if request.method == 'POST':
-		if valid_login(request.form['username']), request.form['password']:
-		return logTheUserIn(request.form['username'])
+		pass
 	else:
 		abort(401)	
-	return render_template('login.html')
 
 if __name__ == '__main__':
 	app.debug = True
