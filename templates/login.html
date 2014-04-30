@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Schedular Login{% endblock %}
 {% block content %} 
-  {{ super() }} 
+  {{ super() }}
   <p>Please log in</p>
-  <form action="/auth" type="get">
-    <input type="text" name="userName" placeholder="User Name">
-    <label>User Name </label> 
-    <input type="password" name="userName" placeholder="Password">
-    <label>Password</label> 
-    <input type="submit" name="submit">
+  {% from "_formhelpers.html" import render_field %}
+  <form action="/login" method="POST">
+    <dl>
+        {{ render_field(form.username) }}
+        {{ render_field(form.password) }}
+    </dl>
+    <p><input type="submit" value="Login" name="submit"></p>
   </form>
 {% endblock %}
