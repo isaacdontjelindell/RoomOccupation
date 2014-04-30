@@ -15,6 +15,19 @@ app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 
 db = SQLAlchemy(app)
+class Users(db.Model):
+    '''
+	This allows login verification
+    '''
+    __tablename__= 'user'
+    username = db.Column(db.Text, primary_key=True)
+    password = db.Column(db.Text)
+
+    def __init__(self,username,password):
+        self.username = username
+        self.password = password
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 class School(db.Model):
 	"""
@@ -34,8 +47,8 @@ class Building(db.Model):
 	tasks = db.relationship('Room', backref='building', lazy='dynamic')\
 
 	def __repr__(self):
-	    return '<Project %r>' % self.name
-	    
+		return '<Project %r>' % self.name
+
 class Room(db.Model):
 	"""
 	This table represents one building. Each row is a reservation
@@ -48,11 +61,12 @@ class Room(db.Model):
 	building_id = db.Column(db.String(64), db.ForeignKey('school.name'))
 
 	def __repr__(self):
-	    return '<Task %r>' % self.description
+		return '<Task %r>' % self.description
 
 def init_db():
 	db.drop_all()
 	db.create_all()
+    # user = Users(name='lanejo01',password='asdf')
 
 	school = School(name='Luther')
 	building1 = Building(name='Miller')
