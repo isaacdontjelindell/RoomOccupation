@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash
-from forms import LoginForm
+from forms import LoginForm, NewRentalForm
 from database import Users
 from flask.ext.login import LoginManager,login_user
 app = Flask(__name__)
@@ -30,14 +30,31 @@ def login():
         # login_user(user)
 
 
-        return render_template('success.html')
+        #return render_template('success.html')
+        return redirect(url_for('search'))
 
     return render_template('login.html',form=form)
+
+@app.route('/search', methods=['POST', 'GET'])
+def search():
+    form = NewRentalForm(request.form)
+    
+    if form.validate():
+        pass    
+    return render_template('search.html', form=form)
+
+@app.route('/results', methods=['POST', 'GET'])
+def results():
+    res = []
+    
+    res = [['Brandt', '123', 'Now', 'later', "john doe"]]
+
+    return render_template('output.html', reservationList = res)
 
 @login_manager.user_loader
 def load_user(username):
     return Users.get(username)
 
 if __name__ == '__main__':
-	app.debug = False
+	app.debug =True 
 	app.run()	

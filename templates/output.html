@@ -1,23 +1,24 @@
 {% extends "base.html" %}
-{% block title %}XKCD generator{% endblock %}
+{% block title %}Results{% endblock %}
 {% block content %} 
   {{ super() }} 
   <div id="output">
 	<table class="table table-striped"> 
 	<tr>
-		<th>Word One</th>
-		<th>Word Two</th>
-		<th>Word Three</th>
-		<th>Word Four</th>
-		<th>Password</th>
+		<th>Building</th>
+		<th>Room</th>
+		<th>Start Date</th>
+		<th>End Date</th>
+		<th>Party Name</th>
 	</tr>
-	{% for wordGroup in passwords %}
+	{% for reservation in reservationList %}
 	<tr>
-		{% for word in wordGroup %}
-		<td> {{word}} </td>
+		{% for data in reservation %}
+		<td> {{data}} </td>
 		{% endfor %}
 	</tr>
 	{% endfor %}
 	</table>
   </div>
+  <input type='button' value='Search Again'>
 {% endblock %}
