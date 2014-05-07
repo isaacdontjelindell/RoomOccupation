@@ -5,7 +5,7 @@ from flask.ext.login import LoginManager,login_user
 app = Flask(__name__)
 app.secret_key = "heartbleed"
 login_manager = LoginManager()
-
+app.debug=True
 @app.route('/')
 def index():
 	return redirect(url_for('login'))
@@ -24,7 +24,7 @@ def login():
     form = LoginForm(request.form)
 
     if request.method == 'POST' and form.validate():
-        # LoginForm = Users(request.form['username'],request.form['password'])
+        user = Users(request.form['username'],request.form['password'])
         # user =Users.query.filter_by(username=request.form['username']).first()
         # user = Users(username=request.form['username'],password=request.form['password'])
         # login_user(user)
