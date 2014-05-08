@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash
 from forms import LoginForm, NewRentalForm
-from database import Users
+from database import Users, Building, Room, init_db
 from flask.ext.login import LoginManager,login_user
+
+
 app = Flask(__name__)
 app.secret_key = "heartbleed"
 login_manager = LoginManager()
