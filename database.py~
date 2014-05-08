@@ -58,7 +58,7 @@ class Reservation(db.Model):
 	Many to many solution (room - client)
 	'''
 	__tablename__ = 'reservation'
-	arrive = db.Column(db.Date, primary_key = True)
+	arrive = db.Column(db.Date, primary_key= True)
 	depart = db.Column(db.Date, primary_key = True)	
 	clientId = db.Column(db.Integer(), db.ForeignKey('Client.id'))
 	roomId = db.Column(db.Integer(), db.ForeignKey('Room.id'))
