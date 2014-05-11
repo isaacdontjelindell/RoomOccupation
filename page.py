@@ -8,6 +8,11 @@ app = Flask(__name__)
 app.secret_key = "heartbleed"
 login_manager = LoginManager()
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+
+
 @app.route('/')
 def index():
 	return redirect(url_for('login'))
@@ -49,6 +54,13 @@ def search():
 def results():
     res = []
     
+    res = [['Brandt', '123', 'Now', 'later', "john doe"]]
+
+    return render_template('output.html', reservationList = res)
+
+@app.route('/initdb')
+def initdb():
+    init_db()
     res = [['Brandt', '123', 'Now', 'later', "john doe"]]
 
     return render_template('output.html', reservationList = res)
