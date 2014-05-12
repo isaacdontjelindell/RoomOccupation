@@ -131,7 +131,13 @@ def init_db():
 	#
 
 	# raw sql
-	#res = engine.execute('select * from building')
-	#for row in res:
-	#	print(row)
+	res = engine.execute('select * from building')
+	for row in res:
+		print(row)
+
+	print("")
+
+	res = engine.execute('select * from reservation')
+	for row in res:
+		print(row)
 

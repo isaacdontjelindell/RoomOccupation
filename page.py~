@@ -54,7 +54,8 @@ def search():
 		room = form.buildingForm.room.data
 		client = form.buildingForm.renter.data
 		print(building, " | ", room, " | ", client)
-		return redirect(url_for('results'))
+		redirect(url_for('results'))
+	print('back in search')
 	return render_template('search.html', form=form)
 
 @app.route('/results', methods=['POST', 'GET'])
