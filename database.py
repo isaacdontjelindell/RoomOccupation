@@ -14,6 +14,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 	'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
+#change to  postgres://ctpdjcyslddqaj:q-DEgthTl0_YwQP5njwdCCZsuq@ec2-54-83-9-127.compute-1.amazonaws.com:5432/d2avi0qi33gj0p
+
+
 
 db = SQLAlchemy(app)
 class Users(db.Model):
