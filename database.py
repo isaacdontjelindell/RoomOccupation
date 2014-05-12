@@ -43,7 +43,7 @@ class Room(Base):
 	number = Column(Integer, index=True)
 	building_id = Column(ForeignKey('building.name'))
 	def __repr__(self):
-		return '<Room %r>' % self.description
+		return '<Room %r >' % self.roomId
 
 class Reservation(Base):
 	'''
@@ -56,7 +56,7 @@ class Reservation(Base):
 	roomId = Column(ForeignKey('room.roomId'), primary_key = True)
 	room = relationship("Room", backref="res")
 	def __repr__(self):
-		return '<Reservation %r>' % self.description
+		return '<Reservation %r>' % self.arrive
 
 
 class Client(Base):
@@ -67,7 +67,8 @@ class Client(Base):
 	name = Column(String(64), index=True)
 	clientId = Column(Integer, primary_key=True)
 	reservations = relationship('Reservation', backref='client', lazy='dynamic')
-
+	phone = Column(String(13))
+	email = Column(String(200))
 	def __repr__(self):
 		return '<Client %r>' % self.description
 
@@ -77,7 +78,7 @@ def init_db():
 
 	metaData = MetaData()
 	Session = sessionmaker(bind=engine)
-	session = Session()
+	initSession = Session()
 
 	Base.metadata.drop_all(engine)
 	Base.metadata.create_all(engine)
@@ -98,9 +99,11 @@ def init_db():
 	res2 = Reservation(arrive = datetime.date(2012, 1, 5), depart = datetime.date(2012, 1, 7), clientId = joe.clientId, roomId = r1.roomId)
 
 
-	#session.add_all([miller, brandt, isaac, joe, r1, res1])
-	session.add_all([miller, brandt, isaac, joe, r1, r2, r3, res1, res2])
-	session.commit()
+	initSession.add_all([miller, brandt, isaac, joe, r1, r2, r3, res1, res2])
+	#fix mixing flask sqlalchmey with plain sqlalchemy
+	initSession._model_changes = {}
+	#end fix
+	initSession.commit()
 
 
 	#allproj = Project.query.all()
@@ -128,16 +131,7 @@ def init_db():
 	#
 
 	# raw sql
-	res = engine.execute('select * from building')
-	for row in res:
-		print(row)
-
-	print("")
-
-	res = engine.execute('select * from reservation')
-	for row in res:
-		print(row)
-
-
-init_db()
+	#res = engine.execute('select * from building')
+	#for row in res:
+	#	print(row)
 
