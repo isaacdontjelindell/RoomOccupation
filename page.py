@@ -4,7 +4,11 @@ from database import Users, Building, Room, Reservation, init_db
 from flask.ext.login import LoginManager,login_user
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
+<<<<<<< HEAD
 import json
+=======
+import pg8000
+>>>>>>> 11bc9dec435d0a4fd16d8618e7a8b4bfdf51d337
 import datetime
 
 app = Flask(__name__)
@@ -12,10 +16,12 @@ app.secret_key = "heartbleed"
 login_manager = LoginManager()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+pg8000://ctpdjcyslddqaj:q-DEgthTl0_YwQP5njwdCCZsuq@ec2-54-83-9-127.compute-1.amazonaws.com:5432/d2avi0qi33gj0p?ssl=true'
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-
 db = SQLAlchemy(app)
+
+
 
 @app.route('/')
 def index():

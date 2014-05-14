@@ -73,8 +73,7 @@ class Client(Base):
 		return '<Client %r>' % self.description
 
 def init_db():
-	basedir = os.path.abspath(os.path.dirname(__file__))
-	engine = create_engine('sqlite:///'+ os.path.join(basedir, 'data.sqlite'))
+	engine = create_engine('postgresql+pg8000://ctpdjcyslddqaj:q-DEgthTl0_YwQP5njwdCCZsuq@ec2-54-83-9-127.compute-1.amazonaws.com:5432/d2avi0qi33gj0p?ssl=true')
 
 	metaData = MetaData()
 	Session = sessionmaker(bind=engine)
