@@ -12,7 +12,7 @@
     </dl>
     <p><input type="submit" value="Create reservation" name="submit"></p>
   </form>
-  <form action="/search" method="POST">
+  <form action="/results" method="POST">
   <p>New Search</p>
     <dl>
         {{ render_field(form.buildingForm) }}
