@@ -41,7 +41,7 @@ def login():
 
 @app.route('/book', methods=['POST', 'GET'])
 def book():
-	form = FullSearchForm(request.form)
+	#form = FullSearchForm(request.form)
 	return render_template('book.html', form=form)
 
 @app.route('/search', methods=['POST', 'GET'])
