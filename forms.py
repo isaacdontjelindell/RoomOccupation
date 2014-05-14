@@ -7,11 +7,12 @@ class LoginForm(Form):
     password = PasswordField('Password', [validators.Required()])
 
 class SearchForm(Form):
-    building = SelectField('Building', choices = [('br', 'Brandt'), ('di', 'Dieseth'), ('mi', 'Miller'), ('yl', 'Ylvisaker'), ('ol','Olson')])
+    building = SelectField('Building', choices = [('Brandt', 'Brandt'), ('Dieseth', 'Dieseth'), ('Miller', 'Miller'), ('Yilvi', 'Ylvisaker'), ('Olson','Olson')])
     room = IntegerField('Room number')
     renter = StringField('Renter name')
 
-class NewRentalForm(Form):
+class FullSearchForm(Form):
     startDate = DateTimeField('Start date', format='%Y-%m-%d %H:%M:%S')
     endDate = DateTimeField('End date', format='%Y-%m-%d %H:%M:%S')
     buildingForm = FormField(SearchForm)
+
