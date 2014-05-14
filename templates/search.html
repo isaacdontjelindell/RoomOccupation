@@ -1,22 +1,4 @@
-{% extends "base.html" %}
+{% extends "generalSearch.html" %}
 {% block title %}Search{% endblock %}
-{% block content %} 
-  {{ super() }}
-  <p>New Reservation</p>
-  {% from "_formhelpers.html" import render_field %}
-  <form action="/search" method="POST">
-    <dl>
-        {{ render_field(form.startDate) }}
-        {{ render_field(form.endDate) }}
-        {{ render_field(form.buildingForm) }}
-    </dl>
-    <p><input type="submit" value="Create reservation" name="submit"></p>
-  </form>
-  <form action="/search" method="POST">
-  <p>New Search</p>
-    <dl>
-        {{ render_field(form.buildingForm) }}
-    </dl>
-    <p><input type="submit" value="Search" name="submit"></p>
-  </form>
-{% endblock %}
+{% block header %}Search{% endblock %}
+{% block formDef %}  <form action="/search" method="POST">{% endblock %}
