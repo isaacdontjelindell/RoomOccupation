@@ -16,8 +16,3 @@ class FullSearchForm(Form):
     startDate = DateTimeField('Start date', format='%Y-%m-%d %H:%M:%S')
     endDate = DateTimeField('End date', format='%Y-%m-%d %H:%M:%S')
     buildingForm = FormField(SearchForm)
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 11bc9dec435d0a4fd16d8618e7a8b4bfdf51d337
