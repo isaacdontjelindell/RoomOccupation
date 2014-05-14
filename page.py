@@ -4,11 +4,8 @@ from database import Users, Building, Room, Reservation, init_db
 from flask.ext.login import LoginManager,login_user
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
-<<<<<<< HEAD
 import json
-=======
 import pg8000
->>>>>>> 11bc9dec435d0a4fd16d8618e7a8b4bfdf51d337
 import datetime
 
 app = Flask(__name__)
@@ -47,7 +44,7 @@ def login():
 
 @app.route('/book', methods=['POST', 'GET'])
 def book():
-	#form = FullSearchForm(request.form)
+	form = FullSearchForm(request.form)
 	return render_template('book.html', form=form)
 
 @app.route('/search', methods=['POST', 'GET'])
