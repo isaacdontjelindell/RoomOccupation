@@ -3,12 +3,13 @@ from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, Date, MetaData, create_engine
 import datetime
 import os
+from flask.ext.login import UserMixin
 
 
 Base = declarative_base()
 
 
-class Users(Base):
+class User(Base):
 	'''
 	This allows login verification
 	'''
@@ -17,10 +18,24 @@ class Users(Base):
 	password = Column(Text)
 
 	def __init__(self,username,password):
-	    self.username = username
-	    self.password = password
-	def __repr__(self):
-	    return '<User %r>' % self.username
+		self.username = username
+		self.password = password
+
+	def is_authenticated(self):
+		return True
+
+	def is_active(self):
+		return True
+
+	def is_anonymous(self):
+		return False
+
+	def get_id(self):
+		return self.username
+
+
+
+
 
 
 class Building(Base):
