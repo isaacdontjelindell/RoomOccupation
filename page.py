@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash
 from forms import LoginForm, SearchForm, FullSearchForm 
-from database import User, Building, Room, Reservation, init_db
+from database import User, Building, Room, Reservation, Client, init_db
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
@@ -60,6 +60,20 @@ def logout():
 @app.route('/book', methods=['POST', 'GET'])
 def book():
 	form = FullSearchForm(request.form)
+	if request.method == 'POST' and form.validate():
+		building = form.buildingForm.building.data
+		roomNum = form.buildingForm.room.data
+		client = form.buildingForm.renter.data
+		startDate = form.startDate.data
+		endDate = form.endDate.data
+
+		#write to database
+		aRoom = db.session.query(Room).filter_by(building_id = building, number = roomNum).first()
+		aClient = db.session.query(Client).filter_by(name = client).first()
+		res = Reservation(arrive = startDate, depart = endDate, roomId = aRoom.roomId, clientId = aClient.clientId)
+		db.session.add(res)
+		db.session.commit()
+
 	return render_template('book.html', form=form)
 
 @app.route('/search', methods=['POST', 'GET'])

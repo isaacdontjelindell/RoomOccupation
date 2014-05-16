@@ -7,6 +7,7 @@ class LoginForm(Form):
     username = TextField('Username', [validators.Required()])
     password = PasswordField('Password', [validators.Required()])
     submit = SubmitField("Login")
+
 class SearchForm(Form):
     building = SelectField('Building', choices = [('Brandt', 'Brandt'), ('Dieseth', 'Dieseth'), ('Miller', 'Miller'), ('Yilvi', 'Ylvisaker'), ('Olson','Olson')])
     room = IntegerField('Room number')
