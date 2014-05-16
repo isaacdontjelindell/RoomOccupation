@@ -14,6 +14,6 @@ class SearchForm(Form):
     renter = StringField('Renter name')
 
 class FullSearchForm(Form):
-    startDate = DateTimeField('Start date', format='%Y-%m-%d %H:%M:%S')
-    endDate = DateTimeField('End date', format='%Y-%m-%d %H:%M:%S')
+    startDate = DateTimeField('Start date', format='%Y-%m-%d')
+    endDate = DateTimeField('End date', format='%Y-%m-%d')
     buildingForm = FormField(SearchForm)
