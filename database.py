@@ -7,6 +7,7 @@ from flask.ext.login import UserMixin
 
 
 Base = declarative_base()
+engine = create_engine('postgresql+pg8000://ctpdjcyslddqaj:q-DEgthTl0_YwQP5njwdCCZsuq@ec2-54-83-9-127.compute-1.amazonaws.com:5432/d2avi0qi33gj0p?ssl=true')
 
 
 class User(Base):
@@ -72,7 +73,11 @@ class Reservation(Base):
 	room = relationship("Room", backref="res")
 	def __repr__(self):
 		return '<Reservation %r>' % self.arrive
-
+	def asList(self):
+		Session = sessionmaker(bind=engine)
+		querySession = Session()
+		cli = querySession.query(Client).filter_by(clientId = self.clientId).first().name
+		return [self.room.building_id, self.room.number, self.arrive, self.depart, cli]
 
 class Client(Base):
 	'''
@@ -88,7 +93,6 @@ class Client(Base):
 		return '<Client %r>' % self.description
 
 def init_db():
-	engine = create_engine('postgresql+pg8000://ctpdjcyslddqaj:q-DEgthTl0_YwQP5njwdCCZsuq@ec2-54-83-9-127.compute-1.amazonaws.com:5432/d2avi0qi33gj0p?ssl=true')
 
 	metaData = MetaData()
 	Session = sessionmaker(bind=engine)

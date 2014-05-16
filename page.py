@@ -94,14 +94,16 @@ def results():
 	searchDict = json.loads(session['searchTerms'])	
 	res = []
 	##database query
-	data = db.session.query(Reservation).filter_by(clientId = 1) #=searchDict['building'])
-	info = data.first()	
-	for row in data:
-		res.append(str(row))
+	data = db.session.query(Reservation) #.filter_by(clientId = 1) #=searchDict['building'])
+	for item in data.all():	
+		res.append(item.asList())
+	#info = data.first()	
+	#for row in data:
+	#	res.append(str(row))
 	##format results
 	#res = [[searchDict['building'], searchDict['room'], 'Now', 'later', searchDict['client']]]
-	building = db.session.query(Room).filter_by(roomId = info.roomId).first()
-	res = [[building.name, info.roomId, info.arrive, info.depart, info.clientId]]
+	#building = db.session.query(Room).filter_by(roomId = info.roomId).first()
+	#res = [[building.name, info.roomId, info.arrive, info.depart, info.clientId]]
 	return render_template('output.html', reservationList = res)
 
 @app.route('/initdb')
