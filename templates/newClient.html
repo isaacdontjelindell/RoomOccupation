@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %} 
+  {{ super() }}
+  {% block header %}New Renter{% endblock %}
+  {% from "_formhelpers.html" import render_field %}
+  <form action="/newRenter" method="POST">
+    <dl>
+        {{ render_field(form.name) }}
+        {{ render_field(form.phone) }}
+        {{ render_field(form.email) }}
+    </dl>
+    <p><input type="submit" value="Search" name="submit"></p>
+  </form>
+{% endblock %}

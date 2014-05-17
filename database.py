@@ -90,7 +90,7 @@ class Client(Base):
 	phone = Column(String(13))
 	email = Column(String(200))
 	def __repr__(self):
-		return '<Client %r>' % self.description
+		return '<Client %r>' % self.name
 
 def init_db():
 

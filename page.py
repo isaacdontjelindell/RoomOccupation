@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash
-from forms import LoginForm, SearchForm, FullSearchForm 
+from forms import LoginForm, NewRenterForm, SearchForm, FullSearchForm 
 from database import User, Building, Room, Reservation, Client, init_db
+from sqlalchemy import desc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
@@ -58,6 +59,7 @@ def logout():
     return redirect('/login')
 
 @app.route('/book', methods=['POST', 'GET'])
+@login_required
 def book():
 	form = FullSearchForm(request.form)
 	if request.method == 'POST' and form.validate():
@@ -70,11 +72,37 @@ def book():
 		#write to database
 		aRoom = db.session.query(Room).filter_by(building_id = building, number = roomNum).first()
 		aClient = db.session.query(Client).filter_by(name = client).first()
+		if not aClient:
+			session['bookInfo'] = json.dumps({'newRenterName':client, 'bookRoomId':str(aRoom.roomId), 'stDate':str(startDate), 'endDate':str(endDate)})
+			return redirect(url_for('newRenter'))
 		res = Reservation(arrive = startDate, depart = endDate, roomId = aRoom.roomId, clientId = aClient.clientId)
 		db.session.add(res)
 		db.session.commit()
 
 	return render_template('book.html', form=form)
+
+@app.route('/newRenter', methods=['POST', 'GET'])
+@login_required
+def newRenter():
+	form = NewRenterForm(request.form)
+	cookieDir = json.loads(session['bookInfo'])
+	form.name.data = cookieDir['newRenterName'] 
+	if request.method == 'POST' and form.validate():
+		aName = form.name.data
+		aNumber = form.phone.data
+		aEmail = form.email.data
+		
+		#get next client id from table
+		newClientId = db.session.query(Client).order_by(desc(Client.clientId)).first().clientId + 1
+		newClient = Client(name=aName, clientId = newClientId, phone = aNumber, email = aEmail)
+		db.session.add(newClient)
+		newRes = Reservation(arrive = cookieDir['stDate'], depart = cookieDir['endDate'], roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
+		db.session.add(newRes)
+		db.session.commit()
+			
+		return redirect(url_for('book'))
+
+	return render_template('newClient.html', form=form)
 
 @app.route('/search', methods=['POST', 'GET'])
 @login_required
@@ -85,18 +113,24 @@ def search():
 		building = form.buildingForm.building.data
 		room = form.buildingForm.room.data
 		client = form.buildingForm.renter.data
-		session['searchTerms'] = json.dumps({'building':building, 'room':str(room), 'client':str(client)})
+		stDate = form.startDate.data
+		endDate = form.endDate.data
+		session['searchTerms'] = json.dumps({'building':building, 'room':room, 'client':client, 'stDate':stDate, 'endDate':endDate})
 		return redirect(url_for('results'))
 	return render_template('search.html', form=form)
 
 @app.route('/results', methods=['POST', 'GET'])
+@login_required
 def results():
 	searchDict = json.loads(session['searchTerms'])	
+	print(searchDict)
 	res = []
 	##database query
-	data = db.session.query(Reservation) #.filter_by(clientId = 1) #=searchDict['building'])
+	#data = db.session.query(Reservation) #.filter_by(clientId = 1) #=searchDict['building'])
+	data = doSearch(searchDict)
 	for item in data.all():	
 		res.append(item.asList())
+
 	#info = data.first()	
 	#for row in data:
 	#	res.append(str(row))
@@ -107,17 +141,24 @@ def results():
 	return render_template('output.html', reservationList = res)
 
 @app.route('/initdb')
+@login_required
 def initdb():
 	init_db()
-	res = [['a', 'b']]	
-	
-	data = db.session.query(Reservation)
-	for row in data:
-		res.append(str(row))
 
+	res = []
+	data = db.session.query(Reservation) 
+	for item in data.all():	
+		res.append(item.asList())
+	
 	return render_template('output.html', reservationList = res)
 
 
+def doSearch(paramDict):
+	data = db.session.query(Reservation)
+	if paramDict['client']:
+		aClientId = db.session.query(Client).filter_by(name = paramDict['client']).first().clientId
+		data = data.filter_by(clientId = aClientId)
+	return data
 
 
 if __name__ == '__main__':
