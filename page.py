@@ -4,6 +4,7 @@ from database import User, Building, Room, Reservation, Client, init_db
 from sqlalchemy import desc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
+from dateutil import parser
 import os
 import json
 import pg8000
@@ -71,6 +72,9 @@ def book():
 
 		#write to database
 		aRoom = db.session.query(Room).filter_by(building_id = building, number = roomNum).first()
+		if not aRoom:
+			err = "Room number " + str(roomNum) + " is not valid for the building " + str(building)
+			return render_template('error.html', msg=err)
 		aClient = db.session.query(Client).filter_by(name = client).first()
 		if not aClient:
 			session['bookInfo'] = json.dumps({'newRenterName':client, 'bookRoomId':str(aRoom.roomId), 'stDate':str(startDate), 'endDate':str(endDate)})
@@ -96,7 +100,8 @@ def newRenter():
 		newClientId = db.session.query(Client).order_by(desc(Client.clientId)).first().clientId + 1
 		newClient = Client(name=aName, clientId = newClientId, phone = aNumber, email = aEmail)
 		db.session.add(newClient)
-		newRes = Reservation(arrive = cookieDir['stDate'], depart = cookieDir['endDate'], roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
+		db.session.commit()
+		newRes = Reservation(arrive = parser.parse(cookieDir['stDate']), depart = parser.parse(cookieDir['endDate']), roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
 		db.session.add(newRes)
 		db.session.commit()
 			
@@ -128,6 +133,8 @@ def results():
 	##database query
 	#data = db.session.query(Reservation) #.filter_by(clientId = 1) #=searchDict['building'])
 	data = doSearch(searchDict)
+	if type(data) is str:
+		return render_template('error.html', msg=data)
 	for item in data.all():	
 		res.append(item.asList())
 
@@ -154,10 +161,21 @@ def initdb():
 
 
 def doSearch(paramDict):
+	#filter building here
 	data = db.session.query(Reservation)
+	#start reducing by the fields requested
 	if paramDict['client']:
-		aClientId = db.session.query(Client).filter_by(name = paramDict['client']).first().clientId
-		data = data.filter_by(clientId = aClientId)
+		aClient = db.session.query(Client).filter_by(name = paramDict['client']).first()
+		if aClient:
+			aClientId = aClient.clientId
+			data = data.filter_by(clientId = aClientId)
+		else:
+			data = "There is no client named " + str(paramDict['client'])
+	if paramDict['stDate']:
+		pass
+	if paramDict['endDate']:
+		pass
+
 	return data
 
 
