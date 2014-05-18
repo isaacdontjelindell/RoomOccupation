@@ -52,7 +52,7 @@ class Building(Base):
 
 class Room(Base):
 	"""
-	This table represents one building. Each row is a reservation
+	This table represents one building. Each row is a room
 	"""
 	__tablename__ = 'room'
 	roomId = Column(Integer, primary_key = True)
@@ -76,8 +76,8 @@ class Reservation(Base):
 	def asList(self):
 		Session = sessionmaker(bind=engine)
 		querySession = Session()
-		cli = querySession.query(Client).filter_by(clientId = self.clientId).first().name
-		return [self.room.building_id, self.room.number, self.arrive, self.depart, cli]
+		cli = querySession.query(Client).filter_by(clientId = self.clientId).first()
+		return [self.room.building_id, self.room.number, self.arrive, self.depart, cli.name, cli.phone]
 
 class Client(Base):
 	'''

@@ -1,4 +1,10 @@
 {% extends "generalSearch.html" %}
+{% from "_formhelpers.html" import render_field %}
 {% block title %}Search{% endblock %}
-{% block header %}Search{% endblock %}
-{% block formDef %}  <form action="/search" method="POST">{% endblock %}
+{% block header %}<h3>Search</h3>{% endblock %}
+{% block formDef %}  <form action="/search" method="POST">
+  <dl>
+  {{ render_field(form.building) }}
+  {{ render_field(form.room) }}
+  {{ render_field(form.renter) }}
+{% endblock %}

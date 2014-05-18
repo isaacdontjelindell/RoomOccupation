@@ -1,4 +1,13 @@
 {% extends "generalSearch.html" %}
+{% from "_formhelpers.html" import render_field %}
 {% block title %}Book{% endblock %}
-{% block header %}New Reservation{% endblock %}
-{% block formDef%}  <form action="/book" method="POST">{% endblock %}
+{% block header %}<h3>New Reservation</h3>{% endblock %}
+{% block formDef%}  <form action="/book" method="POST">
+  <dl>
+    {{ render_field(form.building) }}
+    {{ render_field(form.room) }}
+    {{ render_field(form.renter) }}
+{% endblock %}
+{% block searchButton %}
+ <p><input type="submit" value="Book" name="submit"></p>
+{% endblock %}

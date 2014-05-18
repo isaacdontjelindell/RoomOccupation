@@ -4,11 +4,9 @@
   {% block header %} {% endblock %}
   {% from "_formhelpers.html" import render_field %}
   {% block formDef%} {% endblock %}
-    <dl>
-        {{ render_field(form.buildingForm) }}
         {{ render_field(form.startDate) }}
         {{ render_field(form.endDate) }}
     </dl>
-    <p><input type="submit" value="Search" name="submit"></p>
+{% block searchButton %}    <p><input type="submit" value="Search" name="submit"></p> {% endblock %}
   </form>
 {% endblock %}

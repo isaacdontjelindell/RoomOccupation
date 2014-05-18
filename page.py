@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash
-from forms import LoginForm, NewRenterForm, SearchForm, FullSearchForm 
+from forms import LoginForm, BookForm, NewRenterForm, SearchForm, FullSearchForm 
 from database import User, Building, Room, Reservation, Client, init_db
 from sqlalchemy import desc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
@@ -62,11 +62,11 @@ def logout():
 @app.route('/book', methods=['POST', 'GET'])
 @login_required
 def book():
-	form = FullSearchForm(request.form)
+	form = BookForm(request.form)
 	if request.method == 'POST' and form.validate():
-		building = form.buildingForm.building.data
-		roomNum = form.buildingForm.room.data
-		client = form.buildingForm.renter.data
+		building = form.building.data
+		roomNum = form.room.data
+		client = form.renter.data
 		startDate = form.startDate.data
 		endDate = form.endDate.data
 
@@ -77,9 +77,17 @@ def book():
 			return render_template('error.html', msg=err)
 		aClient = db.session.query(Client).filter_by(name = client).first()
 		if not aClient:
-			session['bookInfo'] = json.dumps({'newRenterName':client, 'bookRoomId':str(aRoom.roomId), 'stDate':str(startDate), 'endDate':str(endDate)})
+			session['bookInfo'] = json.dumps({'newRenterName':client, 'bookRoomId':xstr(aRoom.roomId), 'stDate':xstr(startDate), 'endDate':xstr(endDate)})
 			return redirect(url_for('newRenter'))
 		res = Reservation(arrive = startDate, depart = endDate, roomId = aRoom.roomId, clientId = aClient.clientId)
+
+		termsDict = {'building': xstr(building), 'room':roomNum, 'client': '', 'stDate':xstr(startDate), 'endDate':xstr(endDate)}
+		preRes = doSearch(termsDict)
+		if bookDateCompare(preRes, termsDict):
+			renderTemplate('error.html', msg="There is an issue with that room and date combination")
+		print(preRes.all())
+		print('did it')
+
 		db.session.add(res)
 		db.session.commit()
 
@@ -101,7 +109,12 @@ def newRenter():
 		newClient = Client(name=aName, clientId = newClientId, phone = aNumber, email = aEmail)
 		db.session.add(newClient)
 		db.session.commit()
+		
 		newRes = Reservation(arrive = parser.parse(cookieDir['stDate']), depart = parser.parse(cookieDir['endDate']), roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
+		
+		#cOPY From book
+		preRes = doSearch(cookieDir)	
+		print(preRes)
 		db.session.add(newRes)
 		db.session.commit()
 			
@@ -115,12 +128,12 @@ def search():
 	form = FullSearchForm(request.form)
 	
 	if request.method == 'POST' and form.validate():
-		building = form.buildingForm.building.data
-		room = form.buildingForm.room.data
-		client = form.buildingForm.renter.data
+		building = form.building.data
+		room = form.room.data
+		client = form.renter.data
 		stDate = form.startDate.data
 		endDate = form.endDate.data
-		session['searchTerms'] = json.dumps({'building':building, 'room':room, 'client':client, 'stDate':stDate, 'endDate':endDate})
+		session['searchTerms'] = json.dumps({'building':building, 'room':room, 'client':client, 'stDate':xstr(stDate), 'endDate':xstr(endDate)})
 		return redirect(url_for('results'))
 	return render_template('search.html', form=form)
 
@@ -130,21 +143,13 @@ def results():
 	searchDict = json.loads(session['searchTerms'])	
 	print(searchDict)
 	res = []
-	##database query
-	#data = db.session.query(Reservation) #.filter_by(clientId = 1) #=searchDict['building'])
 	data = doSearch(searchDict)
+	data = searchDateCompare(data, searchDict)
 	if type(data) is str:
 		return render_template('error.html', msg=data)
 	for item in data.all():	
 		res.append(item.asList())
 
-	#info = data.first()	
-	#for row in data:
-	#	res.append(str(row))
-	##format results
-	#res = [[searchDict['building'], searchDict['room'], 'Now', 'later', searchDict['client']]]
-	#building = db.session.query(Room).filter_by(roomId = info.roomId).first()
-	#res = [[building.name, info.roomId, info.arrive, info.depart, info.clientId]]
 	return render_template('output.html', reservationList = res)
 
 @app.route('/initdb')
@@ -161,9 +166,21 @@ def initdb():
 
 
 def doSearch(paramDict):
-	#filter building here
 	data = db.session.query(Reservation)
-	#start reducing by the fields requested
+	if paramDict['building'] != 'None':
+		aBuilding = db.session.query(Building).filter_by(name = paramDict['building']).first()
+		if paramDict['room']:
+			theRoomId = None
+			for room in aBuilding.rooms:
+				if room.number == paramDict['room']:
+					theRoomId = room.roomId
+			data = data.filter(Reservation.roomId == theRoomId) 
+		else:
+			idList = []
+			for room in aBuilding.rooms:
+				idList.append(room.roomId)
+			data = data.filter(Reservation.roomId.in_(idList))
+	print(len(data.all()))
 	if paramDict['client']:
 		aClient = db.session.query(Client).filter_by(name = paramDict['client']).first()
 		if aClient:
@@ -171,12 +188,23 @@ def doSearch(paramDict):
 			data = data.filter_by(clientId = aClientId)
 		else:
 			data = "There is no client named " + str(paramDict['client'])
-	if paramDict['stDate']:
-		pass
-	if paramDict['endDate']:
-		pass
-
+	print(len(data.all()))
 	return data
+
+def searchDateCompare(data, paramDict):
+	if paramDict['stDate']:
+		data = data.filter(Reservation.arrive > parser.parse(paramDict['stDate']))
+	if paramDict['endDate']:
+		data = data.filter(parser.parse(paramDict['endDate']) > Reservation.depart)
+	return data	
+
+def bookDateCompare(data, paramDict):
+	pass
+
+def xstr(s):
+    if not s:
+        return ''
+    return str(s)
 
 
 if __name__ == '__main__':
