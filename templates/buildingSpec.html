@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  {{ super() }}
+  {% block header %}
+
+
+<script type=text/javascript>
+  $(function() {
+    $('#calculate').bind('click', function() {
+
+      $.getJSON('/api/numberOfRooms', {
+
+        building: $('input[name="building"]').val()
+
+      }, function(data) {
+        $("#result").text(data.result);
+      });
+      return false;
+    });
+  });
+</script>
+{% endblock %}
+{% block body %}
+<h1>Select a Building</h1>
+<p><input type=text size=6 name=building>
+   <span id=result>?</span>
+<p><a href=# id=calculate>calculate server side</a>
+
+{% endblock %}
+{% endblock %}

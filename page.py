@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, session, abort, redirect, url_for,flash
-from forms import LoginForm, BookForm, NewRenterForm, SearchForm, FullSearchForm 
+from flask import Flask, render_template, request, session, abort, redirect, url_for,flash,jsonify
+from forms import LoginForm, NewRenterForm, SearchForm, FullSearchForm 
 from database import User, Building, Room, Reservation, Client, init_db
 from sqlalchemy import desc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
@@ -12,6 +12,7 @@ import datetime
 
 app = Flask(__name__)
 app.secret_key = "heartbleed"
+app.debug=True
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -22,6 +23,7 @@ db = SQLAlchemy(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(username):
@@ -164,6 +166,15 @@ def initdb():
 	
 	return render_template('output.html', reservationList = res)
 
+@app.route('/api/numberOfRooms')
+def apiNumOfRooms():
+    building = request.args.get('building','Brandt',type=str)
+    numOfRooms = db.session.query(Room).filter_by(building_id=building).count()
+    return jsonify(result=numOfRooms)
+
+@app.route('/buildingSpec')
+def buildingSpec():
+    return render_template('buildingSpec.html')
 
 def doSearch(paramDict):
 	data = db.session.query(Reservation)
