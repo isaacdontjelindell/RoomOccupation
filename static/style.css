@@ -1,12 +1,22 @@
-header{ 
- background-color : #F0F; 
+#header{
+ background-color : royalblue;
 }
 
-#footer{ 
- background-color:#F0F;
+#footer{
+ color : white;
+ href : white;
+ background-color: royalblue;
 }
 
-header{
- background-color:#F0F;
+.navbar{
+ background-color:royalblue;
 }
 
+A.developer{
+    color: white;
+
+}
+
+.hItem{
+    color:white;
+}

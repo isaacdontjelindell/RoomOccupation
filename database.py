@@ -23,7 +23,14 @@ class User(Base):
 		self.password = password
 
 	def is_authenticated(self):
-		return True
+		Session = sessionmaker(bind=engine)
+		querySession = Session()
+		user = querySession.query(User).filter_by(username = self.username).first()
+		print(user)
+		if user.password == self.password:
+			return True
+		else:
+			return False
 
 	def is_active(self):
 		return True

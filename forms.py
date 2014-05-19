@@ -21,7 +21,7 @@ class FullSearchForm(Form):
     renter = StringField('Renter name', [validators.optional()])
 
 class BookForm(Form):
-    building = SelectField('Building', choices = [('Brandt', 'Brandt'), ('Dieseth', 'Dieseth'), ('Miller', 'Miller'), ('Yilvi', 'Ylvisaker'), ('Olson','Olson'), ('None', 'All')])
+    building = SelectField('Building', choices = [('Brandt', 'Brandt'), ('Dieseth', 'Dieseth'), ('Miller', 'Miller'), ('Yilvisaker', 'Ylvisaker'), ('Olson','Olson'), ('None', 'All')])
     room = IntegerField('Room number')
     renter = StringField('Renter name') 
     startDate = DateTimeField('Start date', format='%Y-%m-%d')
