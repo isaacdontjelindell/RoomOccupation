@@ -13,7 +13,7 @@ import datetime
 
 app = Flask(__name__)
 app.secret_key = "heartbleed"
-app.debug=False
+app.debug=True
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -119,6 +119,7 @@ def newRenter():
 		newRes = Reservation(arrive = parser.parse(cookieDir['stDate']), depart = parser.parse(cookieDir['endDate']), roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
 		
 		#cOPY From book
+		cookieDir['building'] = 'None'
 		preRes = doSearch(cookieDir)	
 		try:
 			db.session.add(newRes)
@@ -228,5 +229,5 @@ def xstr(s):
 
 
 if __name__ == '__main__':
-	app.debug =False 
+	app.debug =True
 	app.run()	

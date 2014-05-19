@@ -26,9 +26,10 @@ class User(Base):
 		Session = sessionmaker(bind=engine)
 		querySession = Session()
 		user = querySession.query(User).filter_by(username = self.username).first()
-		print(user)
-		if user.password == self.password:
-			return True
+
+		if user != None:
+			if user.password == self.password:
+				return True
 		else:
 			return False
 
