@@ -4,5 +4,13 @@
   {{ super() }} 
   {{ msg }}
   <br>
-  <a href='/search'>New Search</a>
+  <p>
+  <form action='/search' method='GET'>
+    <input type='submit' value='New Search'>
+  </form>
+  <form action='/book' method='GET'>
+    <input type='submit' value='New Book'>
+  </form>
+  </p>
+
 {% endblock %}
