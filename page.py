@@ -111,6 +111,7 @@ def newRenter():
 		db.session.commit()
 		
 		newRes = Reservation(arrive = parser.parse(cookieDir['stDate']), depart = parser.parse(cookieDir['endDate']), roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
+		cookieDir['room'] = int(cookieDir['room'])
 		cookieDir['client'] = ''
 		#Copy from book
 		preRes = doSearch(cookieDir)
