@@ -222,7 +222,7 @@ def searchDateCompare(data, paramDict):
 	return data	
 
 def bookDateCompare(data, paramDict):
-	for res in data:
+	for res in data.all():
 		if res.arrive < parser.parse(paramDict['stDate']).date() and res.depart > parser.parse(paramDict['stDate']).date():
 			return True
 		if res.arrive > parser.parse(paramDict['stDate']).date() and res.arrive < parser.parse(paramDict['endDate']).date():
