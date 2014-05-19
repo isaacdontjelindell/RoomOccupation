@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash,jsonify
 from forms import LoginForm, NewRenterForm,FullSearchForm,BookForm
 from database import User, Building, Room, Reservation, Client, init_db
-from sqlalchemy import desc
+from sqlalchemy import desc, exc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
 from flask.ext.sqlalchemy import SQLAlchemy
+
 from dateutil import parser
 import os
 import json
@@ -88,9 +89,14 @@ def book():
 		if bookDateCompare(preRes, termsDict):
 			render_template('error.html', msg="There is an issue with that room and date combination")
 
-		db.session.add(res)
-		db.session.commit()
-
+		try:
+			db.session.add(res)
+			db.session.commit()
+		except (exc.InvalidRequestError, exc.ProgrammingError):
+			db.session.rollback()
+			err = "There is an issue booking that room for that set of dates, please try again. It is most likely there is a record for this user on those dates already."
+			return render_template('error.html', msg=err)
+		
 	return render_template('book.html', form=form)
 
 @app.route('/newRenter', methods=['POST', 'GET'])
@@ -114,9 +120,13 @@ def newRenter():
 		
 		#cOPY From book
 		preRes = doSearch(cookieDir)	
-		print(preRes)
-		db.session.add(newRes)
-		db.session.commit()
+		try:
+			db.session.add(newRes)
+			db.session.commit()
+		except (exc.InvalidRequestError, exc.ProgrammingError):
+			db.session.rollback()
+			err = "There is an issue booking that room for that set of dates, please try again. It is most likely there is a record for this user on those dates already."
+			return render_template('error.html', msg=err)
 			
 		return redirect(url_for('book'))
 
