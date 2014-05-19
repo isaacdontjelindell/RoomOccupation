@@ -21,5 +21,7 @@
 	{% endfor %}
 	</table>
   </div>
-  <input type='button' value='Search Again'>
+  <form action='/search' method='GET'>
+    <input type='submit' name='submit' value='Search Again'>
+  </form>
 {% endblock %}
