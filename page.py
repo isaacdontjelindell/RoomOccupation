@@ -80,15 +80,14 @@ def book():
 			return render_template('error.html', msg=err)
 		aClient = db.session.query(Client).filter_by(name = client).first()
 		if not aClient:
-			session['bookInfo'] = json.dumps({'newRenterName':client, 'bookRoomId':xstr(aRoom.roomId), 'stDate':xstr(startDate), 'endDate':xstr(endDate)})
+			session['bookInfo'] = json.dumps({'room' : roomNum, 'newRenterName':client, 'bookRoomId':xstr(aRoom.roomId), 'stDate':xstr(startDate), 'endDate':xstr(endDate)})
 			return redirect(url_for('newRenter'))
 		res = Reservation(arrive = startDate, depart = endDate, roomId = aRoom.roomId, clientId = aClient.clientId)
 
 		termsDict = {'building': xstr(building), 'room':roomNum, 'client': '', 'stDate':xstr(startDate), 'endDate':xstr(endDate)}
 		preRes = doSearch(termsDict)
 		if bookDateCompare(preRes, termsDict):
-			render_template('error.html', msg="There is an issue with that room and date combination")
-
+			return render_template('error.html', msg="There is an issue with that room and date combination")
 		try:
 			db.session.add(res)
 			db.session.commit()
@@ -117,9 +116,12 @@ def newRenter():
 		db.session.commit()
 		
 		newRes = Reservation(arrive = parser.parse(cookieDir['stDate']), depart = parser.parse(cookieDir['endDate']), roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
-		
+		cookieDir['building'] = 'None'
+		cookieDir['client'] = ''
 		#cOPY From book
 		preRes = doSearch(cookieDir)	
+		if bookDateCompare(preRes, cookieDir):
+			return render_template('error.html', msg="There is an issue with that room and date combination. The new client was still added to the database.")
 		try:
 			db.session.add(newRes)
 			db.session.commit()
@@ -228,5 +230,5 @@ def xstr(s):
 
 
 if __name__ == '__main__':
-	app.debug =False 
+	app.debug = True 
 	app.run()	
