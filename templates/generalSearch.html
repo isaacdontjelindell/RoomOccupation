@@ -4,8 +4,8 @@
   {% block header %} {% endblock %}
   {% from "_formhelpers.html" import render_field %}
   {% block formDef%} {% endblock %}
-        {{ render_field(form.startDate) }}
-        {{ render_field(form.endDate) }}
+        {{ render_field(form.startDate, placeholder="YYYY-MM-DD") }}
+        {{ render_field(form.endDate, placeholder="YYYY-MM-DD") }}
     </dl>
 {% block searchButton %}    <p><input type="submit" value="Search" name="submit"></p> {% endblock %}
   </form>
