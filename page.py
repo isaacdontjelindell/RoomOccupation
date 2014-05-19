@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash,jsonify
-from forms import LoginForm, BookForm, NewRenterForm, FullSearchForm 
+from forms import LoginForm, NewRenterForm,FullSearchForm,BookForm
 from database import User, Building, Room, Reservation, Client, init_db
 from sqlalchemy import desc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
@@ -52,7 +52,7 @@ def login():
 			return redirect(url_for('search'))
 		else:
 			return render_template('login.html',form=form)
-        
+
 	return render_template('login.html',form=form)
 
 @app.route("/logout")
@@ -79,14 +79,14 @@ def book():
 			return render_template('error.html', msg=err)
 		aClient = db.session.query(Client).filter_by(name = client).first()
 		if not aClient:
-			session['bookInfo'] = json.dumps({'room': xstr(roomNum), 'building': building, 'newRenterName':client, 'bookRoomId':xstr(aRoom.roomId), 'stDate':xstr(startDate), 'endDate':xstr(endDate)})
+			session['bookInfo'] = json.dumps({'newRenterName':client, 'bookRoomId':xstr(aRoom.roomId), 'stDate':xstr(startDate), 'endDate':xstr(endDate)})
 			return redirect(url_for('newRenter'))
 		res = Reservation(arrive = startDate, depart = endDate, roomId = aRoom.roomId, clientId = aClient.clientId)
 
 		termsDict = {'building': xstr(building), 'room':roomNum, 'client': '', 'stDate':xstr(startDate), 'endDate':xstr(endDate)}
 		preRes = doSearch(termsDict)
 		if bookDateCompare(preRes, termsDict):
-			return render_template('error.html', msg="There is an issue with that room and date combination")
+			render_template('error.html', msg="There is an issue with that room and date combination")
 
 		db.session.add(res)
 		db.session.commit()
@@ -111,16 +111,10 @@ def newRenter():
 		db.session.commit()
 		
 		newRes = Reservation(arrive = parser.parse(cookieDir['stDate']), depart = parser.parse(cookieDir['endDate']), roomId = int(cookieDir['bookRoomId']), clientId = newClientId)
-		cookieDir['room'] = int(cookieDir['room'])
-		cookieDir['client'] = ''
-		#Copy from book
-		preRes = doSearch(cookieDir)
-		print(cookieDir)
-		print("")
-		print(preRes)	
-		if bookDateCompare(preRes, cookieDir):
-			return render_template('error.html', msg="There is an issue with that room and date combination")
-		#end copy
+		
+		#cOPY From book
+		preRes = doSearch(cookieDir)	
+		print(preRes)
 		db.session.add(newRes)
 		db.session.commit()
 			
@@ -215,15 +209,7 @@ def searchDateCompare(data, paramDict):
 	return data	
 
 def bookDateCompare(data, paramDict):
-	for res in data:
-		if res.arrive < parser.parse(paramDict['stDate']).date() and res.depart > parser.parse(paramDict['stDate']).date():
-			return True
-		if res.arrive > parser.parse(paramDict['stDate']).date() and res.arrive < parser.parse(paramDict['endDate']).date():
-			return True
-		if res.depart > parser.parse(paramDict['stDate']).date() and res.depart < parser.parse(paramDict['endDate']).date():
-			return True
-	return False
-
+	pass
 
 def xstr(s):
 	if not s:
