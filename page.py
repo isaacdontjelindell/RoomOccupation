@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, abort, redirect, url_for,flash,jsonify
-from forms import LoginForm, NewRenterForm, SearchForm, FullSearchForm 
+from forms import LoginForm, NewRenterForm, SearchForm, FullSearchForm,BookForm
 from database import User, Building, Room, Reservation, Client, init_db
 from sqlalchemy import desc
 from flask.ext.login import LoginManager,login_user,login_required,logout_user
@@ -28,7 +28,7 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(username):
 
-    return db.session.query(User).get(username)
+	return db.session.query(User).get(username)
 
 
 @app.route('/')
@@ -39,27 +39,27 @@ def index():
 @app.route('/login',methods=['POST','GET'])
 def login():
 
-    form = LoginForm(request.form)
+	form = LoginForm(request.form)
 
-    if request.method == 'POST' and form.validate():
-        # user = Users(request.form['username'],request.form['password'])
-        # user = db.session.query(User).filter_by(username=request.form['username'],password=request.form['password']).first()
-        user = User(username=request.form['username'],password=request.form['password'])
+	if request.method == 'POST' and form.validate():
+		# user = Users(request.form['username'],request.form['password'])
+		# user = db.session.query(User).filter_by(username=request.form['username'],password=request.form['password']).first()
+		user = User(username=request.form['username'],password=request.form['password'])
 
-        print(user.username,user.password,user.get_id(),user.is_active(),user.is_anonymous(),user.is_authenticated())
-        login_user(user)
-
-
-        #return render_template('success.html')
-        return redirect(url_for('search'))
-
-    return render_template('login.html',form=form)
+		print(user.username,user.password,user.get_id(),user.is_active(),user.is_anonymous(),user.is_authenticated())
+		if user.is_authenticated():
+			login_user(user)
+			return redirect(url_for('search'))
+		else:
+			return render_template('login.html',form=form)
+        
+	return render_template('login.html',form=form)
 
 @app.route("/logout")
 @login_required
 def logout():
-    logout_user()
-    return redirect('/login')
+	logout_user()
+	return redirect('/login')
 
 @app.route('/book', methods=['POST', 'GET'])
 @login_required
@@ -86,9 +86,7 @@ def book():
 		termsDict = {'building': xstr(building), 'room':roomNum, 'client': '', 'stDate':xstr(startDate), 'endDate':xstr(endDate)}
 		preRes = doSearch(termsDict)
 		if bookDateCompare(preRes, termsDict):
-			renderTemplate('error.html', msg="There is an issue with that room and date combination")
-		print(preRes.all())
-		print('did it')
+			render_template('error.html', msg="There is an issue with that room and date combination")
 
 		db.session.add(res)
 		db.session.commit()
@@ -168,13 +166,13 @@ def initdb():
 
 @app.route('/api/numberOfRooms')
 def apiNumOfRooms():
-    building = request.args.get('building','Brandt',type=str)
-    numOfRooms = db.session.query(Room).filter_by(building_id=building).count()
-    return jsonify(result=numOfRooms)
+	building = request.args.get('building','Brandt',type=str)
+	numOfRooms = db.session.query(Room).filter_by(building_id=building).count()
+	return jsonify(result=numOfRooms)
 
 @app.route('/buildingSpec')
 def buildingSpec():
-    return render_template('buildingSpec.html')
+	return render_template('buildingSpec.html')
 
 def doSearch(paramDict):
 	data = db.session.query(Reservation)
@@ -199,7 +197,6 @@ def doSearch(paramDict):
 			data = data.filter_by(clientId = aClientId)
 		else:
 			data = "There is no client named " + str(paramDict['client'])
-	print(len(data.all()))
 	return data
 
 def searchDateCompare(data, paramDict):
@@ -213,9 +210,9 @@ def bookDateCompare(data, paramDict):
 	pass
 
 def xstr(s):
-    if not s:
-        return ''
-    return str(s)
+	if not s:
+		return ''
+	return str(s)
 
 
 if __name__ == '__main__':
