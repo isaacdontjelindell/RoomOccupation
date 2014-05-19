@@ -13,7 +13,7 @@ import datetime
 
 app = Flask(__name__)
 app.secret_key = "heartbleed"
-app.debug=True
+app.debug=False
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -228,5 +228,5 @@ def xstr(s):
 
 
 if __name__ == '__main__':
-	app.debug =True 
+	app.debug =False 
 	app.run()	
