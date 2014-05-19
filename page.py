@@ -13,7 +13,7 @@ import datetime
 
 app = Flask(__name__)
 app.secret_key = "heartbleed"
-app.debug=False
+app.debug=True
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -119,6 +119,7 @@ def newRenter():
 		cookieDir['building'] = 'None'
 		cookieDir['client'] = ''
 		#cOPY From book
+		cookieDir['building'] = 'None'
 		preRes = doSearch(cookieDir)	
 		if bookDateCompare(preRes, cookieDir):
 			return render_template('error.html', msg="There is an issue with that room and date combination. The new client was still added to the database.")
