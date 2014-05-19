@@ -146,8 +146,10 @@ def search():
 @app.route('/results', methods=['POST', 'GET'])
 @login_required
 def results():
-	searchDict = json.loads(session['searchTerms'])	
-	print(searchDict)
+	if 'searchTerms' in session:
+		searchDict = json.loads(session['searchTerms'])	
+	else:
+		searchDict = {'building' : 'None', 'client': None, 'room': "", 'stDate' : None, 'endDate' : None}
 	res = []
 	data = doSearch(searchDict)
 	data = searchDateCompare(data, searchDict)
